@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/m2meq98v6x5mlq9n?svg=true)](https://ci.appveyor.com/project/yarmetal/autoqa5-2)
 
 # Домашнее задание к занятию «2.3. Patterns»
 
