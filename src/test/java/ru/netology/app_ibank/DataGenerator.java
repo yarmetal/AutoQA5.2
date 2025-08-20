@@ -5,45 +5,68 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import ru.netology.model.TestUser;
+import lombok.Value;
 
 import java.util.Locale;
 
 import static io.restassured.RestAssured.given;
 
 public class DataGenerator {
-    private DataGenerator() {}
+
+    private static final RequestSpecification requestSpec = new RequestSpecBuilder()
+            .setBaseUri("http://localhost")
+            .setPort(9999)
+            .setAccept(ContentType.JSON)
+            .setContentType(ContentType.JSON)
+            .log(LogDetail.ALL)
+            .build();
+    private static final Faker faker = new Faker(new Locale("en"));
+
+    private DataGenerator() {
+    }
+
+    private static void sendRequest(RegistrationDto user) {
+        given()
+                .spec(requestSpec)
+                .body(user)
+                .when()
+                .post("/api/system/users")
+                .then()
+                .statusCode(200);
+    }
+
+    public static String getRandomLogin() {
+        String login = faker.name().username();
+        return login;
+    }
+
+    public static String getRandomPassword() {
+        String password = faker.internet().password();
+        return password;
+    }
+
     public static class Registration {
-        private static RequestSpecification requestSpec = new RequestSpecBuilder()
-                .setBaseUri("http://localhost")
-                .setPort(9999)
-                .setAccept(ContentType.JSON)
-                .setContentType(ContentType.JSON)
-                .log(LogDetail.ALL)
-                .build();
-
-        private Registration() {}
-
-        private static TestUser generateUser(String locale, String status) {
-            Faker faker = new Faker(new Locale(locale));
-
-            return new TestUser(faker.name().username(),
-                    faker.internet().password(),
-                    status
-            );
+        private Registration() {
         }
 
-        public static TestUser registerUser(String locale, String status) {
-            TestUser user = generateUser(locale, status);
-            // сам запрос
-            given() // "дано"
-                    .spec(requestSpec) // указываем, какую спецификацию используем
-                    .body(user) // передаём в теле объект, который будет преобразован в JSON
-                    .when() // "когда"
-                    .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                    .then() // "тогда ожидаем"
-                    .statusCode(200); // код 200 OK
+        public static RegistrationDto getUser(String status) {
+            var user = new RegistrationDto(getRandomLogin(), getRandomPassword(), status);
             return user;
         }
+
+        public static RegistrationDto getRegistredUser(String status) {
+            var registerdUser = getUser(status);
+            sendRequest(registerdUser);
+            return registerdUser;
+        }
+    }
+
+    @Value
+    public static class RegistrationDto {
+        String login;
+        String password;
+        String status;
     }
 }
+
+

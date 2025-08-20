@@ -1,12 +1,12 @@
 plugins {
     id 'java'
-    id "io.freefair.lombok" version "5.0.0-rc4"
+    id "io.freefair.lombok" version "5.3.0"
 }
 
 group 'ru.netology'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 // кодировка файлов (если используете русский язык в файлах)
 compileJava.options.encoding = "UTF-8"
