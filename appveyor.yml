@@ -4,12 +4,12 @@ stack: jdk 11  # версия JDK
 
 branches:
   only:
-    - master  # ветка git
+    - main  # ветка git
 
 build: off  # будем использовать свой скрипт сборки
 
 install:
-  java -jar app-ibank.jar -P:profile=test
+  - java -jar ./artifacts/app-ibank.jar -P:profile=test &
 
 build_script:
   - chmod +x gradlew
