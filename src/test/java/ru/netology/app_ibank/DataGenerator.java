@@ -1,6 +1,7 @@
 package ru.netology.app_ibank;
 
 import com.github.javafaker.Faker;
+import com.google.gson.Gson;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
@@ -17,9 +18,10 @@ public class DataGenerator {
             .setBaseUri("http://localhost")
             .setPort(9999)
             .setAccept(ContentType.JSON)
-            .setContentType(ContentType.JSON)
             .log(LogDetail.ALL)
             .build();
+
+    private static Gson gson = new Gson();
     private static final Faker faker = new Faker(new Locale("en"));
 
     private DataGenerator() {
@@ -28,7 +30,7 @@ public class DataGenerator {
     private static void sendRequest(RegistrationDto user) {
         given()
                 .spec(requestSpec)
-                .body(user)
+                .body(gson.toJson(user))
                 .when()
                 .post("/api/system/users")
                 .then()
@@ -36,13 +38,11 @@ public class DataGenerator {
     }
 
     public static String getRandomLogin() {
-        String login = faker.name().username();
-        return login;
+        return faker.name().username();
     }
 
     public static String getRandomPassword() {
-        String password = faker.internet().password();
-        return password;
+        return faker.internet().password();
     }
 
     public static class Registration {
@@ -50,14 +50,13 @@ public class DataGenerator {
         }
 
         public static RegistrationDto getUser(String status) {
-            var user = new RegistrationDto(getRandomLogin(), getRandomPassword(), status);
-            return user;
+            return new RegistrationDto(getRandomLogin(), getRandomPassword(), status);
         }
 
-        public static RegistrationDto getRegistredUser(String status) {
-            var registerdUser = getUser(status);
-            sendRequest(registerdUser);
-            return registerdUser;
+        public static RegistrationDto getRegisteredUser(String status) {
+            var registeredUser = getUser(status);
+            sendRequest(registeredUser);
+            return registeredUser;
         }
     }
 
